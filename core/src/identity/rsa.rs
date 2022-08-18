@@ -44,7 +44,7 @@ pub struct Keypair();
 impl std::fmt::Debug for Keypair {
 
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        #[cfg(not(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64"))))] {
+        #[cfg(not(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64")))] {
             f.debug_struct("Keypair")
                 .field("public", self.0.public_key())
                 .finish()
@@ -89,7 +89,7 @@ impl Keypair {
 
     /// Sign a message with this keypair.
     pub fn sign(&self, data: &[u8]) -> Result<Vec<u8>, SigningError> {
-        #[cfg(not(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64"))))] {
+        #[cfg(not(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64")))] {
             let mut signature = vec![0; self.0.public_modulus_len()];
             let rng = SystemRandom::new();
             match self.0.sign(&RSA_PKCS1_SHA256, &rng, data, &mut signature) {
