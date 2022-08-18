@@ -108,7 +108,7 @@ libp2p-dns = { version = "0.31.0", path = "transports/dns", optional = true, def
 libp2p-mdns = { version = "0.34.0", path = "protocols/mdns", optional = true }
 libp2p-tcp = { version = "0.31.1", path = "transports/tcp", default-features = false, optional = true }
 
-[target.'cfg(not(target_arch = "mips"))'.dependencies]
+[target.'cfg(all(not(target_arch = "mips"), not(target_arch = "mips64")))'.dependencies]
 libp2p-websocket = { version = "0.33.0", path = "transports/websocket", optional = true }
 
 [dev-dependencies]

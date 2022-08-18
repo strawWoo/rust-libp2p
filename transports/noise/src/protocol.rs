@@ -239,11 +239,11 @@ impl snow::resolvers::CryptoResolver for Resolver {
         &self,
         choice: &snow::params::HashChoice,
     ) -> Option<Box<dyn snow::types::Hash>> {
-        #[cfg(any(target_arch = "wasm32", target_arch = "mips"))]
+        #[cfg(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64"))]
         {
             snow::resolvers::DefaultResolver.resolve_hash(choice)
         }
-        #[cfg(not(any(target_arch = "wasm32", target_arch = "mips")))]
+        #[cfg(not(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64")))]
         {
             snow::resolvers::RingResolver.resolve_hash(choice)
         }
@@ -253,11 +253,11 @@ impl snow::resolvers::CryptoResolver for Resolver {
         &self,
         choice: &snow::params::CipherChoice,
     ) -> Option<Box<dyn snow::types::Cipher>> {
-        #[cfg(any(target_arch = "wasm32", target_arch = "mips"))]
+        #[cfg(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64"))]
         {
             snow::resolvers::DefaultResolver.resolve_cipher(choice)
         }
-        #[cfg(not(any(target_arch = "wasm32", target_arch = "mips")))]
+        #[cfg(not(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64")))]
         {
             snow::resolvers::RingResolver.resolve_cipher(choice)
         }

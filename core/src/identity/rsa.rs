@@ -23,34 +23,34 @@
 use super::error::*;
 use asn1_der::typed::{DerDecodable, DerEncodable, DerTypeView, Sequence};
 use asn1_der::{Asn1DerError, Asn1DerErrorVariant, DerObject, Sink, VecBacking};
-#[cfg(not(any(target_arch = "wasm32", target_arch = "mips")))]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64")))]
 use ring::rand::SystemRandom;
-#[cfg(not(any(target_arch = "wasm32", target_arch = "mips")))]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64")))]
 use ring::signature::KeyPair;
-#[cfg(not(any(target_arch = "wasm32", target_arch = "mips")))]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64")))]
 use ring::signature::{self, RsaKeyPair, RSA_PKCS1_2048_8192_SHA256, RSA_PKCS1_SHA256};
 use std::{fmt, sync::Arc};
 use zeroize::Zeroize;
 
 /// An RSA keypair.
-#[cfg(not(any(target_arch = "wasm32", target_arch = "mips")))]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64")))]
 #[derive(Clone)]
 pub struct Keypair(Arc<RsaKeyPair>);
 
-#[cfg(any(target_arch = "wasm32", target_arch = "mips"))]
+#[cfg(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64"))]
 #[derive(Clone)]
 pub struct Keypair();
 
 impl std::fmt::Debug for Keypair {
 
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        #[cfg(not(any(target_arch = "wasm32", target_arch = "mips")))] {
+        #[cfg(not(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64"))))] {
             f.debug_struct("Keypair")
                 .field("public", self.0.public_key())
                 .finish()
         }
 
-        #[cfg(any(target_arch = "wasm32", target_arch = "mips"))] {
+        #[cfg(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64"))] {
             panic!("arch no support")
         }
     }
@@ -62,14 +62,14 @@ impl Keypair {
     ///
     /// [RFC5208]: https://tools.ietf.org/html/rfc5208#section-5
     pub fn from_pkcs8(der: &mut [u8]) -> Result<Keypair, DecodingError> {
-        #[cfg(not(any(target_arch = "wasm32", target_arch = "mips")))] {
+        #[cfg(not(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64")))] {
             let kp = RsaKeyPair::from_pkcs8(der)
                 .map_err(|e| DecodingError::new("RSA PKCS#8 PrivateKeyInfo").source(e))?;
             der.zeroize();
             Ok(Keypair(Arc::new(kp)))
         }
 
-        #[cfg(any(target_arch = "wasm32", target_arch = "mips"))] {
+        #[cfg(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64"))] {
             panic!("arch no support")
         }
     }
@@ -78,18 +78,18 @@ impl Keypair {
 
     /// Get the public key from the keypair.
     pub fn public(&self) -> PublicKey {
-        #[cfg(not(any(target_arch = "wasm32", target_arch = "mips")))] {
+        #[cfg(not(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64")))] {
             PublicKey(self.0.public_key().as_ref().to_vec())
         }
 
-        #[cfg(any(target_arch = "wasm32", target_arch = "mips"))] {
+        #[cfg(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64"))] {
             panic!("arch no support")
         }
     }
 
     /// Sign a message with this keypair.
     pub fn sign(&self, data: &[u8]) -> Result<Vec<u8>, SigningError> {
-        #[cfg(not(any(target_arch = "wasm32", target_arch = "mips")))] {
+        #[cfg(not(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64"))))] {
             let mut signature = vec![0; self.0.public_modulus_len()];
             let rng = SystemRandom::new();
             match self.0.sign(&RSA_PKCS1_SHA256, &rng, data, &mut signature) {
@@ -98,7 +98,7 @@ impl Keypair {
             }
         }
 
-        #[cfg(any(target_arch = "wasm32", target_arch = "mips"))] {
+        #[cfg(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64"))] {
             panic!("arch no support")
         }
     }
@@ -111,12 +111,12 @@ pub struct PublicKey(Vec<u8>);
 impl PublicKey {
     /// Verify an RSA signature on a message using the public key.
     pub fn verify(&self, msg: &[u8], sig: &[u8]) -> bool {
-        #[cfg(not(any(target_arch = "wasm32", target_arch = "mips")))] {
+        #[cfg(not(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64")))] {
             let key = signature::UnparsedPublicKey::new(&RSA_PKCS1_2048_8192_SHA256, &self.0);
             key.verify(msg, sig).is_ok()
         }
 
-        #[cfg(any(target_arch = "wasm32", target_arch = "mips"))] {
+        #[cfg(any(target_arch = "wasm32", target_arch = "mips", target_arch = "mips64"))] {
             panic!("arch no support")
         }
     }
